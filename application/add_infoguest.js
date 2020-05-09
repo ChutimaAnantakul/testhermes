@@ -1,4 +1,9 @@
 $(() => {
+  ShowCheckin();
+  $("#savecheckinguest").click(AddCheckinGuest);
+});
+
+function ShowCheckin() {
   // input test
   var query = window.location.search.substring(1);
   var vars = query.split("=");
@@ -7,7 +12,7 @@ $(() => {
   // input test
 
   // gard 12
-  $.getjson(url, {
+  $.getJSON(url, {
     format: "json",
   })
     .done(function (data) {
@@ -26,4 +31,32 @@ $(() => {
     .fail(function (jqxhr, testStatus, error) {
       alert("fail");
     });
-});
+}
+
+function AddCheckinGuest() {
+  var query = window.location.search.substring(1);
+  var vars = query.split("=");
+  var ID = vars[1];
+  $("#bl_id_add").val(ID);
+  $("#savecheckinguest").click(function (e) {
+    e.preventDefault();
+    $("form_add_checkinguest").submit();
+  });
+
+  $("#form_add_checkinguest").on("submit", function (e) {
+    var parameter = $(this).serializeArray();
+    console.log(parameter);
+    var url = "http://localhost/hermes/api.php/AddCheckinGuest";
+    $("#btn_yes").click(function (e) {
+      $.post(url, parameter, function (response) {
+        // console.log(parameter);
+        if (response["message"] == "success") {
+          // alerat succes
+          $("#modal_alert").modal("show");
+        }
+      });
+      e.preventDefault();
+    });
+    e.preventDefault();
+  });
+}

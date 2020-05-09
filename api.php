@@ -157,19 +157,47 @@ $app->get('/ShowCheckin/{bl_id}', function (Request $request, Response $response
 });
 
 
-$app->get('/AddCheckinGuest', function (Request $request, Response $response, array $args) {
-    $bl_id = $args['bl_id'];
-    $ginfo_id = $args['ginfo_id'];
-    $sql1 = "INSERT INTO guest_info(ginfo_id, ginfo_first_name, ginfo_last_name, ginfo_telno, ginfo_passport_id, ginfo_birthday, ginfo_nation,
-            ginfo_email, ginfo_sex)
-            SELECT ginfo_id, ginfo_first_name, ginfo_last_name, ginfo_telno, ginfo_passport_id, ginfo_birthday, ginfo_nation, ginfo_email, ginfo_sex
-            FROM guest_info WHERE";
-    $sth = $this->db->query($sql1)->fetchAll(PDO::FETCH_ASSOC);
-    $sql2 = "INSERT INTO book_log(bl_id, bl_incbreakfast, bl_breakfast, bl_price)
-            SELECT bl_id, bl_incbreakfast, bl_breakfast, bl_price
-            FROM book_log WHERE ginfo_id = $ginfo_id";
-    $sth = $this->db->query($sql2)->fetchAll(PDO::FETCH_ASSOC);
-    return $this->response->withJson($sth);
+$app->post('/AddCheckinGuest', function (Request $request, Response $response, array $args) {
+    $params = $_POST;
+    // echo ("<pre>");
+    // print_r($params);
+    // print_r($_POST);
+    // echo ("<pre>");
+    // exit;
+    $bl_id = $params['bl_id_add'];
+    $ginfo_first_name = $params['display_firstname_checkinguest'];
+    $ginfo_last_name = $params['display_lastname_checkinguest'];
+    $ginfo_telno = $params['display_phone_checkinguest'];
+    $ginfo_passport_id = $params['display_passport_checkinguest'];
+    $ginfo_birthday = $params['display_HBD_checkinguest'];
+    $ginfo_nation = $params['display_nation_checkinguest'];
+    $ginfo_email = $params['display_email_checkinguest'];
+    $ginfo_sex = $params['display_sex_checkinguest'];
+    $bl_incbreakfast = $params['display_incbreakfast_checkinguest'];
+    $bl_breakfast = $params['display_breakfast_checkinguest'];
+    $bl_price = $params['display_price_checkinguest'];
+
+    try {
+        $sql = "SELECT * from guest_info g
+                join book_log bl
+                on  g.ginfo_id = bl.bl_ginfo
+                WHERE bl.bl_id = $bl_id";
+        $sth = $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        $ginfo_id = $sth['ginfo_id'];
+        $sql1 = "INSERT INTO guest_info(ginfo_first_name, ginfo_last_name, ginfo_telno, ginfo_passport_id, ginfo_birthday, ginfo_nation, ginfo_email, ginfo_sex)
+                VALUES ('$ginfo_first_name', '$ginfo_last_name', '$ginfo_telno', '$ginfo_passport_id', '$ginfo_birthday', '$ginfo_nation', '$ginfo_email', '$ginfo_sex')
+                WHERE ginfo_id = $ginfo_id";
+        $this->db->query($sql1);
+
+        $sql2 = "INSERT INTO book_log(bl_incbreakfast, bl_breakfast, bl_price)
+            VALUES ('$bl_incbreakfast', '$bl_breakfast', '$bl_price')
+            WHERE bl_id = $bl_id";
+        $this->db->query($sql2);
+
+        return $this->response->withJson(array('message' => 'success'));
+    } catch (PDOException $e) {
+        return $this->response->withJson(array('message' => 'false'));
+    }
 });
 
 // end gard 12
