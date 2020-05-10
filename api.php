@@ -134,7 +134,22 @@ $app->post('/updateGuest', function (Request $request, Response $response, array
         return $this->response->withJson(array('message' => 'false'));
     }
 });
-
+// DisplayRoom card 5
+$app->get('/DisplayRoom/{id}', function (Request $request, Response $response, array $args) {
+    $bl_id = $args['id'];
+    $sql="SELECT * from book_log bl join guest_info g
+    on bl.bl_ginfo = g.ginfo_id
+    where bl_id = $bl_id";
+    $sth = $this->db->query($sql)->fetch(PDO::FETCH_ASSOC);
+    $ginfo_first_name = $sth['ginfo_first_name'];
+    $ginfo_last_name = $sth['ginfo_last_name'];
+    $sql1 = "SELECT g.ginfo_room,r.room_name FROM hermes.guest_info g join rooms r
+    on g.ginfo_room = r.room_id
+    where g.ginfo_first_name = '$ginfo_first_name' AND g.ginfo_last_name ='$ginfo_last_name'";
+    $sth1 = $this->db->query($sql1)->fetchAll(PDO::FETCH_ASSOC);
+    return $this->response->withJson($sth1);
+});
+// end DisplayRoom card 5 
 // gard 12
 $app->get('/ShowCheckin/{bl_id}', function (Request $request, Response $response, array $args) {
     $bl_id = $args['bl_id'];
@@ -201,6 +216,7 @@ $app->post('/AddCheckinGuest', function (Request $request, Response $response, a
 });
 
 // end gard 12
+
 
 
 
