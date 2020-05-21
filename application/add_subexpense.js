@@ -72,8 +72,7 @@ function show_payment() {
     $.each(data, function (k, item) {
       console.log(item);
       line += "<tr>";
-      line +=
-        "<td><button type= 'button' class='btn btn-info btn-round'>Info</button></td>";
+      line += "<td><button type= 'button' class='btn btn-info btn-round'>Info</button></td>";
       line += "<td>" + item.pl_datetimes + "</td>";
       line += "<td>" + item.pl_description + "</td>";
       line += "<td>" + item.pl_price + "</td>";
@@ -82,6 +81,24 @@ function show_payment() {
     });
     $("#detail").empty();
     $("#detail").append(line);
-    $("#display").DataTable({});
+
+    $('#display').DataTable({
+
+    });
   });
+}
+
+//--------------------------------------------------------[ Function Public ] ------------------------------------
+function reload() {
+  location.reload();
+}
+
+
+function base_url(path){
+  var host = window.location.origin;
+  // "http://localhost"
+  var pathArray = window.location.pathname.split( '/' );
+  // split path
+  return host+"/"+pathArray[1]+"/"+path;
+  // return http://localhost/hermes/+path
 }
